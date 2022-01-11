@@ -57,10 +57,7 @@ if( !function_exists( 'ext_shortcode_configuration_metabox_render' ) ){
          */
         Extender_Shop_Page::$ext_elements = apply_filters( 'ext_default_elements', Extender_Shop_Page::$ext_elements );
         Extender_Shop_Page::$ext_default_enabled_elements = apply_filters( 'ext_default_enabled_elements', Extender_Shop_Page::$ext_default_enabled_elements );
-        echo '<pre>';
-        print_r(Extender_Shop_Page::$ext_elements);
-        echo '</pre>';
-       // print_r(Extender_Shop_Page::$ext_default_enabled_elements);
+      
         echo '<input type="hidden" name="ext_shortcode_nonce_value" value="' . wp_create_nonce( plugin_basename( __FILE__ ) ) . '" />'; //We have to remove it later
         include __DIR__ . '/shop-product-form.php';
         ?> 

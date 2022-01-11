@@ -84,13 +84,13 @@ class Extender_Shop_Page {
      * @return string
      */
     public static $ext_elements = [
-        'title'                 => 'title',
-        'sale_tag'              => 'sale_tag',
-        'thumbnail'             => 'thumbnail',
-        'rating'                => 'rating',
-        'price'                 => 'price',
-        'cart_btn'              => 'cart_btn',
         'additional'            => 'additional',
+        'sale_tag'              => 'sale_tag',
+        'cart_btn'              => 'cart_btn',
+        'price'                 => 'price',
+        'rating'                => 'rating',
+        'thumbnail'             => 'thumbnail',
+        'title'                 => 'title',
     ];
 
     /**
@@ -116,12 +116,12 @@ class Extender_Shop_Page {
      * @var array
      */
     public static $ext_default_enabled_elements = [
-        'title'                 => 'title',
+        'cart_btn'              => 'cart_btn',
+        'price'                 => 'price',
+        'rating'                => 'rating',
         'sale_tag'              => 'sale_tag',
         'thumbnail'             => 'thumbnail',
-        'rating'                => 'rating',
-        'price'                 => 'price',
-        'cart_btn'              => 'cart_btn',
+        'title'                 => 'title',
     ];
 
     /**
@@ -229,7 +229,7 @@ class Extender_Shop_Page {
      * @since   1.0.0
      */
     public function includes(){
-
+        include_once EXT_INCLUDES . 'shortcode.php';
     }
 
 

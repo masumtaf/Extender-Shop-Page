@@ -22,10 +22,6 @@ if( empty( $elements_settings ) ){
     $elements_settings = array();
 }
 
-echo '<pre>';
-print_r(get_post_meta( $post->ID, 'ext_elements_array', true ));
-echo '</pre>';
-
 $additional_collumn = array_diff(array_keys($for_add), array_keys( Extender_Shop_Page::$ext_elements ));
 
 if( is_array( $meta_enable_elements_array ) && !empty( $meta_enable_elements_array ) ){
