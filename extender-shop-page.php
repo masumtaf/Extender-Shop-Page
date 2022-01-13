@@ -89,6 +89,7 @@ class Extender_Shop_Page {
         'cart_btn'              => 'cart_btn',
         'price'                 => 'price',
         'rating'                => 'rating',
+        'category'              => 'category',
         'thumbnail'             => 'thumbnail',
         'title'                 => 'title',
     ];
@@ -161,6 +162,8 @@ class Extender_Shop_Page {
         $this->includes();
         // $this->update_cpt();
 
+     
+
     }
   
     /**
@@ -203,8 +206,8 @@ class Extender_Shop_Page {
      * @since   1.0.0
      */
     public function actions(){
-       
-       add_action( 'admin_enqueue_scripts', [ $this, 'ext_admin_enqueue_scripts' ], 99 );
+        add_filter( 'plugin_action_links_' . EXT_PBNAME, [ $this, 'plugin_action_links' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'ext_admin_enqueue_scripts' ], 99 );
     }
 
     /**
@@ -260,6 +263,24 @@ class Extender_Shop_Page {
         wp_enqueue_style( 'ext-admin', EXT_ADMIN_ASSETS_URL . 'css/admin.css', array(), EXT_VER, 'all' );
         wp_enqueue_script( 'ext-admin-js', EXT_ADMIN_ASSETS_URL . 'js/admin.js', array('jquery'), EXT_VER, true );
     }
+
+    
+	/**
+	 * Show action links on the plugin screen.
+	 *
+	 * @param mixed $links Plugin Action links.
+	 * @since 1.0.0
+     * @package Extender Shop Page
+     * @version 1.0.0
+	 * @return array
+	 */
+	public static function plugin_action_links( $links ) {
+		$action_links = array(
+			'settings' => '<a href="' . admin_url( 'edit.php?post_type=ext_shop_product' ) . '" aria-label="' . esc_attr__( 'View Extender Shop', 'extender-shop-page' ) . '">' . esc_html__( 'Settings', 'extender-shop-page' ) . '</a>',
+		);
+
+		return array_merge( $action_links, $links );
+	}
 
 }
 

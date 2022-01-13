@@ -199,9 +199,8 @@ if ( ! function_exists( 'ext_shortcode_generator' ) ){
     do_action( 'ext_action_before_shop_loop', $shop_ID, $args, $elements_settings, $enabled_elements_array, $config_value, $atts );
     $html .= ob_get_clean();
 
-
-    ob_start();
-    $html .= woocommerce_product_loop_start();
+    $html .= '<div class="ext_woo_shoo_wrapper woocommerce">';
+  
     if ( $enabled_elements_array && is_array( $enabled_elements_array ) && count( $enabled_elements_array ) >= 1) {
         foreach ( $enabled_elements_array as $key => $colunt_title ) {
             $updated_title = isset( $elements_array[$key] ) ? $elements_array[$key] : $colunt_title;
@@ -234,28 +233,37 @@ if ( ! function_exists( 'ext_shortcode_generator' ) ){
                  */
                 do_action( 'ext_admin_tab_' . $key, $shop_ID, $enabled_elements_array );
                 ?>
-                <li <?php wc_product_class( '', $product ); ?>>
+           
                 <?php
-                include $elements_file_of_admin; 
-                echo '</li>';
+                //include $elements_file_of_admin; 
+               
             }else{
                 echo '<h2>' . $key . '.php ' . esc_html__( 'file is not found in tabs folder','extender-shop-page' ) . '</h2>';
             }
 
-            $html .= ext_shop_elements_generator( $shop_elements_generator_array );
+           
            
         }
-       
+
       
+
+      
+
+        $html .= ext_shop_elements_generator( $shop_elements_generator_array );
+
+    
+        
+
+        ob_start();
         /**
          * Action for After Table
          * @since 1.0.0
          */
         do_action( 'ext_action_after_shop', $shop_ID, $args, $elements_settings, $enabled_elements_array, $config_value, $atts );
-        $html .= woocommerce_product_loop_end();
+
         $html .= ob_get_clean();
         
-        
+        $html .= "</div>";
         return $html;
     }
 
@@ -268,12 +276,59 @@ if ( ! function_exists( 'ext_shop_elements_generator' ) ) {
     function ext_shop_elements_generator( $shop_elements_generator_array ) {
         ob_start();
         $html = false;
-
+        $html .= woocommerce_product_loop_start();
         $shop_ID = $shop_elements_generator_array['args']['ext_ID'];
         $args    = $shop_elements_generator_array['args'];
+        $ext_shop_keywords = $shop_elements_generator_array['ext_shop_keywords'];
 
-        // print_r($args);
-        $html = ob_get_clean();
+        $elements_array = get_post_meta( $shop_ID, 'ext_elements_array', true );
+        $elements_settings = get_post_meta( $shop_ID, 'ext_elements_settings' , true);
+
+      
+        $elements_array = apply_filters( 'exto_column_arr', $elements_array, $shop_ID, null, $elements_settings, $ext_shop_keywords ); 
+        $elements_settings = apply_filters( 'exto_column_settings', $elements_settings, $shop_ID, $ext_shop_keywords ); 
+        
+        /**
+         * Adding Filter for Args inside Row Generator
+         */
+        $args = apply_filters( 'exto_shop_query_args_in_row', $args, $shop_ID, false, $elements_settings, false, false );
+       
+        $args['posts_per_page'] = is_numeric( $args['posts_per_page'] ) ? (int) $args['posts_per_page'] : $args['posts_per_page'];
+        
+        $product_loop = new WP_Query($args);
+        $product_loop = apply_filters( 'exto_product_loop', $product_loop, $shop_ID, $args );
+        if ( $product_loop->have_posts() ) {
+            while ( $product_loop->have_posts() ) :
+            $product_loop->the_post();
+            global $product;
+            $data = $product->get_data();
+            $product_type = $product->get_type();
+            $parent_id = $product->get_parent_id(); // Version 2.7.7
+            
+            (Int) $id = $data['id']; 
+
+            $ext_each_row = false;
+
+            do_action( 'ext_before_row', $elements_settings, $shop_ID, $product );
+            $row_manager_loc = EXT_INCLUDES . 'elements-manager.php';
+            $row_manager_loc = apply_filters( 'ext_row_manager_loc',$row_manager_loc, $elements_settings,$ext_shop_keywords, $args, $shop_ID, $product );
+            // echo '<pre>';
+            // print_r($row_manager_loc);
+            // echo '</pre>';
+            if( file_exists( $row_manager_loc ) ){
+                include $row_manager_loc;
+            }
+            do_action( 'ext_after_row', $elements_settings, $shop_ID, $product );
+
+           
+            endwhile;
+        }
+
+        
+        wp_reset_query();
+       
+        $html .= ob_get_clean();
+        $html .= woocommerce_product_loop_end();
         return $html;
     }
 
